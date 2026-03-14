@@ -4,53 +4,33 @@
   --font-sans: var(--font-zen-maru);
 }
 
-:root {
-  --bg-primary: #1a1511;
-  --bg-card: #2a2320;
-  --text-primary: #f5ece3;
-  --text-secondary: #a89888;
-  --accent: #f97316;
-}
-
 body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: #fef6ee;
+  color: #3d2e22;
   min-height: 100dvh;
   overflow-x: hidden;
 }
 
-/* Noise texture overlay */
+/* Soft warm gradient background */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(251, 191, 114, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(244, 114, 114, 0.08) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* Warm ambient glow */
-body::after {
-  content: "";
-  position: fixed;
-  top: -40%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120%;
-  height: 60%;
-  background: radial-gradient(ellipse, rgba(249, 115, 22, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Staggered entrance animation */
+/* Animations */
 @keyframes popIn {
   0% {
     opacity: 0;
-    transform: scale(0.6) translateY(12px);
+    transform: scale(0.5) translateY(16px);
   }
-  60% {
-    transform: scale(1.08) translateY(-2px);
+  50% {
+    transform: scale(1.1) translateY(-4px);
   }
   100% {
     opacity: 1;
@@ -62,17 +42,6 @@ body::after {
   from {
     opacity: 0;
     transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
   }
   to {
     opacity: 1;
@@ -93,80 +62,93 @@ body::after {
   }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-6deg) scale(1.15); }
+  40% { transform: rotate(6deg) scale(1.15); }
+  60% { transform: rotate(-3deg) scale(1.08); }
+  80% { transform: rotate(3deg) scale(1.05); }
+}
+
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 
-@keyframes wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-3deg); }
-  75% { transform: rotate(3deg); }
+@keyframes labelSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .animate-pop-in {
-  animation: popIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 .animate-fade-up {
   animation: fadeUp 0.5s ease-out both;
 }
 
-.animate-slide-down {
-  animation: slideDown 0.4s ease-out both;
-}
-
 .animate-result-reveal {
   animation: resultReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-label-slide {
+  animation: labelSlide 0.4s ease-out both;
 }
 
 /* Mood button styles */
 .mood-btn {
   position: relative;
-  border: 1.5px solid rgba(255, 255, 255, 0.06);
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
-}
-
-.mood-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
-  pointer-events: none;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .mood-btn:active {
-  transform: scale(0.92);
+  transform: scale(0.93);
 }
 
 @media (hover: hover) {
   .mood-btn:hover {
-    transform: scale(1.06);
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+    transform: scale(1.06) translateY(-2px);
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06);
   }
   .mood-btn:hover .mood-emoji {
-    animation: wiggle 0.4s ease-in-out;
+    animation: wiggle 0.5s ease-in-out;
   }
 }
 
 /* Scrollbar styling */
-.mood-grid::-webkit-scrollbar {
-  width: 3px;
-}
-.mood-grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-.mood-grid::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+.mood-area::-webkit-scrollbar {
+  width: 0;
+  display: none;
 }
 
-/* Omakase button shimmer */
+/* Omakase button */
 .omakase-btn {
-  background: linear-gradient(90deg, transparent 0%, rgba(249, 115, 22, 0.15) 50%, transparent 100%);
-  background-size: 200% 100%;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(249, 115, 22, 0.1) 50%, transparent 100%),
+    linear-gradient(135deg, #fff8f0, #fff0e0);
+  background-size: 200% 100%, 100% 100%;
   animation: shimmer 3s ease-in-out infinite;
+  box-shadow: 0 2px 12px -2px rgba(249, 115, 22, 0.2);
+}
+
+/* Category label */
+.category-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
