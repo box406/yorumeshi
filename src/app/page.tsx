@@ -430,7 +430,7 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Google Maps Fallback / Always Show */}
+              {/* Google Maps */}
               <a
                 href={`https://www.google.com/maps/search/${encodeURIComponent(result.name + " レストラン")}`}
                 target="_blank"
@@ -446,6 +446,56 @@ export default function Home() {
                   </span>
                   <span className="text-[10px] text-orange-400">
                     「{result.name}」で地図検索
+                  </span>
+                </div>
+                <span className="ml-auto text-orange-300">›</span>
+              </a>
+            </div>
+
+            {/* Recipe Links Section */}
+            <div
+              className="animate-fade-up w-full flex flex-col gap-2.5"
+              style={{ animationDelay: "0.4s" }}
+            >
+              <p className="text-xs font-bold text-orange-400 ml-1">
+                🍳 自分で作る
+              </p>
+
+              <a
+                href={`https://cookpad.com/search/${encodeURIComponent(result.name)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-2xl bg-white border border-orange-200/60 px-4 py-3 shadow-sm transition-all active:scale-[0.98] hover:shadow-md"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 text-lg">
+                  📝
+                </span>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-bold text-orange-900">
+                    クックパッドで探す
+                  </span>
+                  <span className="text-[10px] text-orange-400">
+                    「{result.name}」の人気レシピ
+                  </span>
+                </div>
+                <span className="ml-auto text-orange-300">›</span>
+              </a>
+
+              <a
+                href={`https://recipe.rakuten.co.jp/search/${encodeURIComponent(result.name)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-2xl bg-white border border-orange-200/60 px-4 py-3 shadow-sm transition-all active:scale-[0.98] hover:shadow-md"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-lg">
+                  🍽️
+                </span>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-bold text-orange-900">
+                    楽天レシピで探す
+                  </span>
+                  <span className="text-[10px] text-orange-400">
+                    「{result.name}」のレシピ一覧
                   </span>
                 </div>
                 <span className="ml-auto text-orange-300">›</span>
