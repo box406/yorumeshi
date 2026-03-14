@@ -168,7 +168,7 @@ export default function Home() {
         setShopsError(msgs[err.code] || "位置情報の取得に失敗しました");
         setShopsLoading(false);
       },
-      { enableHighAccuracy: false, timeout: 10000 }
+      { enableHighAccuracy: false, timeout: 30000, maximumAge: 300000 }
     );
   }, []);
 
