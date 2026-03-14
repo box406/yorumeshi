@@ -49,6 +49,8 @@
 | PWA | Service Worker (Network First) |
 | OGP画像 | next/og で自動生成 |
 
+| テスト | Vitest + Testing Library |
+
 ## プロジェクト構成
 
 ```
@@ -64,8 +66,15 @@ src/
 │   ├── page.tsx                 # メインページ
 │   ├── robots.ts                # robots.txt生成
 │   └── sitemap.ts               # sitemap.xml生成
-└── data/
-    └── menus.json               # 200品のメニューデータ
+├── lib/
+│   └── search-keywords.ts       # メニュー名→検索キーワード変換
+├── data/
+│   └── menus.json               # 200品のメニューデータ
+└── __tests__/
+    ├── setup.ts                  # テストセットアップ
+    ├── menus.test.ts             # メニューデータの整合性テスト
+    ├── search-keywords.test.ts   # キーワード変換ロジックテスト
+    └── page.test.tsx             # UIコンポーネントテスト
 ```
 
 ## セットアップ
@@ -103,6 +112,21 @@ npm run build
 Vercelにpushすると自動デプロイされます。
 
 Vercelダッシュボードで環境変数 `HOTPEPPER_API_KEY` を設定してください。
+
+## テスト
+
+Vitest + Testing Library で31テストを実装。
+
+```bash
+npm test            # 1回実行
+npm run test:watch  # ウォッチモード
+```
+
+| テストファイル | 内容 | テスト数 |
+|---|---|---|
+| `menus.test.ts` | 200品の存在確認・ID連番・重複なし・全タグ有効・全気分使用 | 8 |
+| `search-keywords.test.ts` | 18ジャンルのキーワード変換・フォールバック | 12 |
+| `page.test.tsx` | 初期表示・気分選択・結果表示・レシピリンク・画面遷移 | 11 |
 
 ## SEO対策
 
