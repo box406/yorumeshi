@@ -120,7 +120,7 @@ export default function Home() {
     }
   }, []);
 
-  const fetchNearbyShops = useCallback((menuName: string) => {
+  const fetchNearbyShops = useCallback((menuName: string, mood?: string) => {
     setShops([]);
     setShopsError(null);
     setShopsLoading(true);
@@ -138,6 +138,7 @@ export default function Home() {
             lat: String(pos.coords.latitude),
             lng: String(pos.coords.longitude),
             keyword: menuName,
+            ...(mood ? { mood } : {}),
           });
           const res = await fetch(`/api/shops?${params}`);
           const data = await res.json();
@@ -195,7 +196,7 @@ export default function Home() {
       setPhase("result");
       addHistory(pick.id);
       setIsAnimating(false);
-      fetchNearbyShops(pick.name);
+      fetchNearbyShops(pick.name, mood);
     }, 400);
   };
 
@@ -210,7 +211,7 @@ export default function Home() {
       setRerollCount((c) => c + 1);
       addHistory(pick.id);
       setIsAnimating(false);
-      fetchNearbyShops(pick.name);
+      fetchNearbyShops(pick.name, mood);
     }, 400);
   };
 
