@@ -4,7 +4,7 @@
   "description": "今日の晩ごはん、もう悩まない",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fffbf5",
+  "background_color": "#fef6ee",
   "theme_color": "#f97316",
   "icons": [
     {
