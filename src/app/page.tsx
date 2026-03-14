@@ -111,6 +111,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [shops, setShops] = useState<Shop[]>([]);
   const [shopsLoading, setShopsLoading] = useState(false);
+  const [shopsError, setShopsError] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -121,7 +122,14 @@ export default function Home() {
 
   const fetchNearbyShops = useCallback((menuName: string) => {
     setShops([]);
+    setShopsError(null);
     setShopsLoading(true);
+
+    if (!navigator.geolocation) {
+      setShopsError("この端末では位置情報を利用できません");
+      setShopsLoading(false);
+      return;
+    }
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
@@ -133,17 +141,33 @@ export default function Home() {
           });
           const res = await fetch(`/api/shops?${params}`);
           const data = await res.json();
+          if (data.error && data.shops?.length === 0) {
+            const msgs: Record<string, string> = {
+              API_KEY_MISSING: "APIキーが未設定です",
+              LOCATION_MISSING: "位置情報の取得に失敗しました",
+              NO_RESULTS: "近くにお店が見つかりませんでした",
+              API_FETCH_FAILED: "お店の検索に失敗しました",
+            };
+            setShopsError(msgs[data.error] || "エラーが発生しました");
+          }
           setShops(data.shops || []);
         } catch {
+          setShopsError("通信エラーが発生しました");
           setShops([]);
         } finally {
           setShopsLoading(false);
         }
       },
-      () => {
+      (err) => {
+        const msgs: Record<number, string> = {
+          1: "位置情報の許可が必要です（設定から許可してください）",
+          2: "位置情報を取得できませんでした",
+          3: "位置情報の取得がタイムアウトしました",
+        };
+        setShopsError(msgs[err.code] || "位置情報の取得に失敗しました");
         setShopsLoading(false);
       },
-      { enableHighAccuracy: false, timeout: 8000 }
+      { enableHighAccuracy: false, timeout: 10000 }
     );
   }, []);
 
@@ -195,6 +219,7 @@ export default function Home() {
     setResult(null);
     setRerollCount(0);
     setShops([]);
+    setShopsError(null);
   };
 
   let globalIndex = 0;
@@ -347,6 +372,13 @@ export default function Home() {
                 <div className="flex items-center justify-center gap-2 rounded-2xl bg-white border border-orange-200/60 px-5 py-5">
                   <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-orange-300 border-t-transparent" />
                   <span className="text-sm text-orange-400">お店を探し中...</span>
+                </div>
+              )}
+
+              {!shopsLoading && shopsError && shops.length === 0 && (
+                <div className="flex items-center gap-2 rounded-2xl bg-orange-50 border border-orange-200/60 px-4 py-3">
+                  <span className="text-sm">⚠️</span>
+                  <span className="text-xs text-orange-500">{shopsError}</span>
                 </div>
               )}
 
