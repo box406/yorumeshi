@@ -462,20 +462,20 @@ export default function Home() {
               </p>
 
               <a
-                href={`https://retty.me/kw/${encodeURIComponent(result.name)}/`}
+                href={`https://www.kurashiru.com/search?query=${encodeURIComponent(result.name)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 rounded-2xl bg-white border border-orange-200/60 px-4 py-3 shadow-sm transition-all active:scale-[0.98] hover:shadow-md"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-100 text-lg">
-                  😋
+                  🎬
                 </span>
                 <div className="flex flex-col items-start">
                   <span className="text-sm font-bold text-orange-900">
-                    Rettyで探す
+                    クラシルで探す
                   </span>
                   <span className="text-[10px] text-orange-400">
-                    「{result.name}」の口コミ・お店
+                    「{result.name}」の動画レシピ
                   </span>
                 </div>
                 <span className="ml-auto text-orange-300">›</span>
