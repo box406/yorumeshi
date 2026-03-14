@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🍽️ よるめし
 
-## Getting Started
+> 今日の晩ごはん、もう悩まない
 
-First, run the development server:
+気分を選ぶだけで今夜のメニューを提案してくれるWebアプリ。外食派には近くのお店、自炊派にはレシピリンクも表示します。
+
+**URL**: https://yorumeshi.vercel.app
+
+## 主な機能
+
+### 🎯 気分でメニュー提案
+- 16種類の気分ボタンから選ぶだけでメニューを提案
+- 200種類以上の献立データベース
+- 過去の提案履歴を考慮して重複を回避
+
+### 気分カテゴリ（16種類）
+
+| カテゴリ | 気分 |
+|---|---|
+| 味の気分 | がっつり🍖 / さっぱり🥗 / こってり🧈 / 辛い🌶️ / やさしい☺️ |
+| 温度 | あったかい🔥 / 冷たい🧊 |
+| 食べ方 | ヘルシー🥬 / パパッと⚡ / じっくり🍲 |
+| ジャンル | 麺気分🍜 / どんぶり🍚 / サクサク🍤 |
+| シーン | なつかしい👵 / ごほうび✨ / 飲みたい🍺 |
+
+### 📍 近くのお店検索（外食向け）
+- **ホットペッパーグルメAPI**: メニューに合ったジャンルで近くのお店を最大3件表示
+- **Google Maps**: メニュー名で地図検索
+
+### 🍳 レシピ検索（自炊向け）
+- **クックパッド**: メニュー名で人気レシピを検索
+- **楽天レシピ**: メニュー名でレシピ一覧を検索
+
+### 🔄 その他
+- 「おまかせ」でランダム提案
+- 「やだ」で1回だけ別メニューに変更可能
+- PWA対応（ホーム画面に追加して使える）
+
+## 技術スタック
+
+| 項目 | 技術 |
+|---|---|
+| フレームワーク | Next.js 16 (App Router) |
+| 言語 | TypeScript |
+| スタイリング | Tailwind CSS 4 |
+| フォント | Zen Maru Gothic (Google Fonts) |
+| ホスティング | Vercel |
+| 外部API | ホットペッパーグルメAPI |
+| PWA | Service Worker (Network First) |
+| OGP画像 | next/og で自動生成 |
+
+## プロジェクト構成
+
+```
+src/
+├── app/
+│   ├── api/
+│   │   └── shops/
+│   │       └── route.ts        # ホットペッパーAPIプロキシ
+│   ├── globals.css              # グローバルスタイル・アニメーション
+│   ├── layout.tsx               # メタデータ・SEO・構造化データ
+│   ├── opengraph-image.tsx      # OGP画像自動生成
+│   ├── twitter-image.tsx        # Twitter Card画像自動生成
+│   ├── page.tsx                 # メインページ
+│   ├── robots.ts                # robots.txt生成
+│   └── sitemap.ts               # sitemap.xml生成
+└── data/
+    └── menus.json               # 200品のメニューデータ
+```
+
+## セットアップ
+
+### 1. インストール
+
+```bash
+npm install
+```
+
+### 2. 環境変数
+
+```env
+HOTPEPPER_API_KEY=ホットペッパーAPIキー
+```
+
+ホットペッパーAPIキーは https://webservice.recruit.co.jp/ で無料取得できます。
+
+### 3. 開発サーバー起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 で確認できます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. ビルド
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+## デプロイ
 
-To learn more about Next.js, take a look at the following resources:
+Vercelにpushすると自動デプロイされます。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Vercelダッシュボードで環境変数 `HOTPEPPER_API_KEY` を設定してください。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## SEO対策
 
-## Deploy on Vercel
+- メタデータ（title / description / keywords）
+- OpenGraph / Twitter Card メタタグ + 自動生成画像
+- robots.txt（/api/ クロール除外）
+- sitemap.xml（自動生成）
+- JSON-LD 構造化データ（WebApplication）
+- Google Search Console 登録済み
+- canonical URL 設定
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ライセンス
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
