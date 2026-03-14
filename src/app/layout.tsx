@@ -9,6 +9,7 @@ const zenMaru = Zen_Maru_Gothic({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://yorumeshi.vercel.app"),
   title: "よるめし - 今日の晩ごはん、もう悩まない",
   description:
     "今日の晩ごはんが決まらない？気分を選ぶだけでメニューを提案！200種類以上の献立から、がっつり・さっぱり・ヘルシーなど16の気分で今夜のごはんが決まります。近くのお店検索やレシピリンクも。",
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "よるめし - 今日の晩ごはん、もう悩まない",
     description:
       "気分を選ぶだけで今夜のメニューが決まる！200種類以上の献立×16の気分。",
