@@ -40,6 +40,12 @@ export default function Home() {
   const [rerollCount, setRerollCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js");
+    }
+  }, []);
+
   const pickMenu = useCallback((mood?: Mood) => {
     const history = getHistory();
     let candidates = menus.filter((m) => !history.includes(m.id));
