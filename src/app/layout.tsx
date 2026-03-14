@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_JP } from "next/font/google";
+import { Zen_Maru_Gothic } from "next/font/google";
 import "./globals.css";
 
-const notoSansJP = Noto_Sans_JP({
-  variable: "--font-noto-sans-jp",
+const zenMaru = Zen_Maru_Gothic({
+  variable: "--font-zen-maru",
   subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -36,7 +37,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
-      <body className={`${notoSansJP.variable} font-sans antialiased`}>
+      <body className={`${zenMaru.variable} font-sans antialiased`}>
         {children}
       </body>
     </html>
