@@ -462,6 +462,26 @@ export default function Home() {
               </p>
 
               <a
+                href={`https://retty.me/kw/${encodeURIComponent(result.name)}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-2xl bg-white border border-orange-200/60 px-4 py-3 shadow-sm transition-all active:scale-[0.98] hover:shadow-md"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-100 text-lg">
+                  😋
+                </span>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-bold text-orange-900">
+                    Rettyで探す
+                  </span>
+                  <span className="text-[10px] text-orange-400">
+                    「{result.name}」の口コミ・お店
+                  </span>
+                </div>
+                <span className="ml-auto text-orange-300">›</span>
+              </a>
+
+              <a
                 href={`https://cookpad.com/search/${encodeURIComponent(result.name)}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -476,26 +496,6 @@ export default function Home() {
                   </span>
                   <span className="text-[10px] text-orange-400">
                     「{result.name}」の人気レシピ
-                  </span>
-                </div>
-                <span className="ml-auto text-orange-300">›</span>
-              </a>
-
-              <a
-                href={`https://recipe.rakuten.co.jp/search/${encodeURIComponent(result.name)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-2xl bg-white border border-orange-200/60 px-4 py-3 shadow-sm transition-all active:scale-[0.98] hover:shadow-md"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-lg">
-                  🍽️
-                </span>
-                <div className="flex flex-col items-start">
-                  <span className="text-sm font-bold text-orange-900">
-                    楽天レシピで探す
-                  </span>
-                  <span className="text-[10px] text-orange-400">
-                    「{result.name}」のレシピ一覧
                   </span>
                 </div>
                 <span className="ml-auto text-orange-300">›</span>

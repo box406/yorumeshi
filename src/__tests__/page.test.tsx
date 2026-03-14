@@ -112,8 +112,8 @@ describe("Home page", () => {
 
     await waitFor(
       () => {
+        expect(screen.getAllByText("Rettyで探す").length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText("クックパッドで探す").length).toBeGreaterThanOrEqual(1);
-        expect(screen.getAllByText("楽天レシピで探す").length).toBeGreaterThanOrEqual(1);
       },
       { timeout: 1000 }
     );
