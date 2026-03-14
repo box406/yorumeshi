@@ -119,12 +119,12 @@ export default function Home() {
             <p className="mt-3 text-lg text-zinc-500">今日の気分は？</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 w-full max-w-xs max-h-[60dvh] overflow-y-auto">
+          <div className="grid grid-cols-3 gap-3 w-full max-w-sm max-h-[60dvh] overflow-y-auto">
             {MOODS.map(({ label, emoji }) => (
               <button
                 key={label}
                 onClick={() => handleMoodSelect(label)}
-                className="flex flex-col items-center gap-2 rounded-2xl bg-white px-6 py-5 text-lg font-medium shadow-sm transition-all active:scale-95 hover:shadow-md"
+                className="flex flex-col items-center gap-1 rounded-2xl bg-white px-3 py-4 text-sm font-medium shadow-sm transition-all active:scale-95 hover:shadow-md"
               >
                 <span className="text-3xl">{emoji}</span>
                 <span>{label}</span>
