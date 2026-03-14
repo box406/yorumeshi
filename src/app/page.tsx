@@ -112,6 +112,7 @@ export default function Home() {
   const [shops, setShops] = useState<Shop[]>([]);
   const [shopsLoading, setShopsLoading] = useState(false);
   const [shopsError, setShopsError] = useState<string | null>(null);
+  const [shopsFallback, setShopsFallback] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -123,6 +124,7 @@ export default function Home() {
   const fetchNearbyShops = useCallback((menuName: string, mood?: string) => {
     setShops([]);
     setShopsError(null);
+    setShopsFallback(false);
     setShopsLoading(true);
 
     if (!navigator.geolocation) {
@@ -151,6 +153,7 @@ export default function Home() {
             };
             setShopsError(msgs[data.error] || "エラーが発生しました");
           }
+          setShopsFallback(!!data.isFallback);
           setShops(data.shops || []);
         } catch {
           setShopsError("通信エラーが発生しました");
@@ -221,6 +224,7 @@ export default function Home() {
     setRerollCount(0);
     setShops([]);
     setShopsError(null);
+    setShopsFallback(false);
   };
 
   let globalIndex = 0;
@@ -365,7 +369,7 @@ export default function Home() {
               style={{ animationDelay: "0.3s" }}
             >
               <p className="text-xs font-bold text-orange-400 ml-1">
-                📍 近くのお店
+                📍 {shopsFallback ? "近くのお店" : `「${result.name}」が食べられるお店`}
               </p>
 
               {/* Hot Pepper Results */}

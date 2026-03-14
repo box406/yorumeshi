@@ -3,54 +3,48 @@ import { NextRequest, NextResponse } from "next/server";
 const HOTPEPPER_API = "http://webservice.recruit.co.jp/hotpepper/gourmet/v1/";
 
 // メニュー名 → ホットペッパーで検索しやすいキーワードに変換
-function extractSearchKeyword(menuName: string): string[] {
-  const keywords: string[] = [];
-
-  // ジャンルキーワードのマッピング（優先度順にマッチ）
-  const patterns: [RegExp, string][] = [
-    [/ラーメン|つけ麺|担々麺/, "ラーメン"],
-    [/そば|蕎麦/, "そば"],
-    [/うどん/, "うどん"],
-    [/パスタ|ペペロンチーノ|カルボナーラ|ナポリタン|ミートソース|ボンゴレ|ジェノベーゼ/, "パスタ イタリアン"],
-    [/カレー|ハヤシ/, "カレー"],
-    [/丼|牛丼|カツ丼|親子丼|天丼|海鮮丼|ポキ丼|ビビンバ|ロコモコ|ルーロー|ガパオ|タコライス|ナシゴレン/, "丼 定食"],
-    [/寿司|刺身/, "寿司 海鮮"],
-    [/鍋|すき焼き|しゃぶしゃぶ|おでん|チゲ|もつ鍋/, "鍋"],
-    [/焼肉|ジンギスカン|サムギョプサル/, "焼肉"],
-    [/ステーキ|ハンバーグ|ローストビーフ/, "ステーキ ハンバーグ"],
-    [/とんかつ|カツ|フライ|唐揚げ|天ぷら|コロッケ|春巻き|串カツ/, "揚げ物 とんかつ"],
-    [/餃子|焼売|小籠包|肉まん/, "餃子 中華"],
-    [/麻婆|回鍋肉|青椒|酢豚|八宝菜|油淋|エビチリ|チャーハン|中華/, "中華料理"],
-    [/チヂミ|タッカルビ|トッポギ|チャプチェ|キムチ|サムギョプサル|参鶏湯/, "韓国料理"],
-    [/フォー|パッタイ|トムヤム|生春巻|カオマンガイ|ナシゴレン/, "タイ料理 アジア"],
-    [/ピザ|グラタン|ドリア|ラザニア|リゾット|キッシュ/, "イタリアン"],
-    [/お好み焼き|もんじゃ|たこ焼き/, "お好み焼き"],
-    [/焼き鳥|手羽先/, "焼き鳥 居酒屋"],
-    [/居酒屋|飲み/, "居酒屋"],
+function extractSearchKeywords(menuName: string): string[] {
+  const patterns: [RegExp, string[]][] = [
+    [/ラーメン|つけ麺|担々麺/, ["ラーメン"]],
+    [/そば|蕎麦/, ["そば"]],
+    [/うどん/, ["うどん"]],
+    [/パスタ|ペペロンチーノ|カルボナーラ|ナポリタン|ミートソース|ボンゴレ|ジェノベーゼ/, ["イタリアン", "パスタ"]],
+    [/カレー|ハヤシ/, ["カレー"]],
+    [/丼|牛丼|カツ丼|親子丼|天丼|海鮮丼|ポキ丼|ビビンバ|ロコモコ|ルーロー|ガパオ|タコライス|ナシゴレン/, ["定食", "丼"]],
+    [/寿司|刺身/, ["寿司", "海鮮"]],
+    [/鍋|すき焼き|しゃぶしゃぶ|おでん|チゲ|もつ鍋/, ["鍋"]],
+    [/焼肉|ジンギスカン|サムギョプサル/, ["焼肉"]],
+    [/ステーキ|ハンバーグ|ローストビーフ/, ["ステーキ", "ハンバーグ"]],
+    [/とんかつ|カツ|フライ|唐揚げ|天ぷら|コロッケ|春巻き|串カツ/, ["とんかつ", "定食"]],
+    [/餃子|焼売|小籠包|肉まん/, ["中華", "餃子"]],
+    [/麻婆|回鍋肉|青椒|酢豚|八宝菜|油淋|エビチリ|チャーハン|中華/, ["中華"]],
+    [/チヂミ|タッカルビ|トッポギ|チャプチェ|キムチ|参鶏湯/, ["韓国料理"]],
+    [/フォー|パッタイ|トムヤム|生春巻|カオマンガイ|ナシゴレン/, ["タイ", "アジア"]],
+    [/ピザ|グラタン|ドリア|ラザニア|リゾット|キッシュ/, ["イタリアン"]],
+    [/お好み焼き|もんじゃ|たこ焼き/, ["お好み焼き"]],
+    [/焼き鳥|手羽先/, ["焼き鳥", "居酒屋"]],
   ];
 
-  for (const [pattern, keyword] of patterns) {
+  for (const [pattern, keywords] of patterns) {
     if (pattern.test(menuName)) {
-      keywords.push(keyword);
-      break;
+      return keywords;
     }
   }
 
-  // マッチしなかった場合はメニュー名そのまま
-  if (keywords.length === 0) {
-    keywords.push(menuName);
-  }
-
-  return keywords;
+  return [menuName];
 }
 
-// 気分タグ → ホットペッパーのジャンルコード
-function moodToGenre(mood: string): string | null {
-  const map: Record<string, string> = {
-    麺気分: "G013",     // ラーメン
-    飲みたい: "G001",   // 居酒屋
-  };
-  return map[mood] || null;
+async function searchShops(
+  baseParams: Record<string, string>,
+  keyword?: string
+): Promise<Record<string, unknown>[]> {
+  const params = { ...baseParams };
+  if (keyword) params.keyword = keyword;
+  const res = await fetch(
+    `${HOTPEPPER_API}?${new URLSearchParams(params)}`
+  );
+  const data = await res.json();
+  return data.results?.shop || [];
 }
 
 export async function GET(req: NextRequest) {
@@ -63,46 +57,35 @@ export async function GET(req: NextRequest) {
   const lat = searchParams.get("lat");
   const lng = searchParams.get("lng");
   const keyword = searchParams.get("keyword") || "";
-  const mood = searchParams.get("mood") || "";
 
   if (!lat || !lng) {
     return NextResponse.json({ shops: [], error: "LOCATION_MISSING" });
   }
 
-  const baseParams: Record<string, string> = {
-    key, lat, lng, range: "3", count: "3", format: "json", order: "4",
-  };
-
-  // ジャンルコードがある気分ならジャンル指定
-  const genreCode = moodToGenre(mood);
-  if (genreCode) {
-    baseParams.genre = genreCode;
-  }
-
   try {
-    // 1. ジャンルキーワードで検索
-    const searchKeywords = extractSearchKeyword(keyword);
-    let rawShops = null;
+    const base = { key, lat, lng, count: "3", format: "json", order: "4" };
 
-    for (const kw of searchKeywords) {
-      const res = await fetch(
-        `${HOTPEPPER_API}?${new URLSearchParams({ ...baseParams, keyword: kw })}`
-      );
-      const data = await res.json();
-      rawShops = data.results?.shop;
-      if (rawShops && rawShops.length > 0) break;
+    // 1. ジャンルキーワードで3km圏内を検索
+    const keywords = extractSearchKeywords(keyword);
+    let rawShops: Record<string, unknown>[] = [];
+
+    for (const kw of keywords) {
+      rawShops = await searchShops({ ...base, range: "5" }, kw);
+      if (rawShops.length > 0) break;
     }
 
-    // 2. それでもなければメニュー名そのままで検索
-    if (!rawShops || rawShops.length === 0) {
-      const res = await fetch(
-        `${HOTPEPPER_API}?${new URLSearchParams({ ...baseParams, keyword })}`
-      );
-      const data = await res.json();
-      rawShops = data.results?.shop;
+    // 2. メニュー名そのままで3km圏内
+    if (rawShops.length === 0) {
+      rawShops = await searchShops({ ...base, range: "5" }, keyword);
     }
 
-    if (!rawShops || rawShops.length === 0) {
+    // 3. キーワードなしで近くのお店（フォールバック）
+    const isFallback = rawShops.length === 0;
+    if (isFallback) {
+      rawShops = await searchShops({ ...base, range: "5" });
+    }
+
+    if (rawShops.length === 0) {
       return NextResponse.json({ shops: [], error: "NO_RESULTS" });
     }
 
@@ -118,7 +101,7 @@ export async function GET(req: NextRequest) {
         genre: (s.genre as Record<string, string>)?.name || "",
       })
     );
-    return NextResponse.json({ shops });
+    return NextResponse.json({ shops, isFallback });
   } catch (e) {
     return NextResponse.json({
       shops: [],
