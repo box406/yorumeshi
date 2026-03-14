@@ -3,13 +3,25 @@
 import { useState, useCallback, useEffect } from "react";
 import menus from "@/data/menus.json";
 
-type Mood = "がっつり" | "さっぱり" | "あったかい" | "冷たい";
+type Mood = "がっつり" | "さっぱり" | "あったかい" | "冷たい" | "ヘルシー" | "こってり" | "辛い" | "やさしい" | "パパッと" | "じっくり" | "なつかしい" | "ごほうび" | "飲みたい" | "麺気分" | "どんぶり" | "サクサク";
 
 const MOODS: { label: Mood; emoji: string }[] = [
   { label: "がっつり", emoji: "🍖" },
   { label: "さっぱり", emoji: "🥗" },
   { label: "あったかい", emoji: "🔥" },
   { label: "冷たい", emoji: "🧊" },
+  { label: "ヘルシー", emoji: "🥬" },
+  { label: "こってり", emoji: "🧈" },
+  { label: "辛い", emoji: "🌶️" },
+  { label: "やさしい", emoji: "☺️" },
+  { label: "パパッと", emoji: "⚡" },
+  { label: "じっくり", emoji: "🍲" },
+  { label: "なつかしい", emoji: "👵" },
+  { label: "ごほうび", emoji: "✨" },
+  { label: "飲みたい", emoji: "🍺" },
+  { label: "麺気分", emoji: "🍜" },
+  { label: "どんぶり", emoji: "🍚" },
+  { label: "サクサク", emoji: "🍤" },
 ];
 
 const HISTORY_KEY = "yorumeshi-history";
@@ -107,7 +119,7 @@ export default function Home() {
             <p className="mt-3 text-lg text-zinc-500">今日の気分は？</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 w-full max-w-xs">
+          <div className="grid grid-cols-2 gap-4 w-full max-w-xs max-h-[60dvh] overflow-y-auto">
             {MOODS.map(({ label, emoji }) => (
               <button
                 key={label}
