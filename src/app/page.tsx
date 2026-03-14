@@ -7,6 +7,15 @@ type Mood = "がっつり" | "さっぱり" | "あったかい" | "冷たい" | 
 
 type MoodDef = { label: Mood; emoji: string; bg: string; text: string };
 
+type Shop = {
+  name: string;
+  address: string;
+  access: string;
+  photo: string;
+  url: string;
+  genre: string;
+};
+
 const MOOD_MAP: Record<Mood, MoodDef> = {
   がっつり: { label: "がっつり", emoji: "🍖", bg: "bg-red-100", text: "text-red-700" },
   さっぱり: { label: "さっぱり", emoji: "🥗", bg: "bg-emerald-100", text: "text-emerald-700" },
@@ -100,12 +109,42 @@ export default function Home() {
   const [rerollCount, setRerollCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [shops, setShops] = useState<Shop[]>([]);
+  const [shopsLoading, setShopsLoading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js");
     }
+  }, []);
+
+  const fetchNearbyShops = useCallback((menuName: string) => {
+    setShops([]);
+    setShopsLoading(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const params = new URLSearchParams({
+            lat: String(pos.coords.latitude),
+            lng: String(pos.coords.longitude),
+            keyword: menuName,
+          });
+          const res = await fetch(`/api/shops?${params}`);
+          const data = await res.json();
+          setShops(data.shops || []);
+        } catch {
+          setShops([]);
+        } finally {
+          setShopsLoading(false);
+        }
+      },
+      () => {
+        setShopsLoading(false);
+      },
+      { enableHighAccuracy: false, timeout: 8000 }
+    );
   }, []);
 
   const pickMenu = useCallback((mood?: Mood) => {
@@ -132,6 +171,7 @@ export default function Home() {
       setPhase("result");
       addHistory(pick.id);
       setIsAnimating(false);
+      fetchNearbyShops(pick.name);
     }, 400);
   };
 
@@ -146,6 +186,7 @@ export default function Home() {
       setRerollCount((c) => c + 1);
       addHistory(pick.id);
       setIsAnimating(false);
+      fetchNearbyShops(pick.name);
     }, 400);
   };
 
@@ -153,6 +194,7 @@ export default function Home() {
     setPhase("mood");
     setResult(null);
     setRerollCount(0);
+    setShops([]);
   };
 
   let globalIndex = 0;
@@ -260,7 +302,7 @@ export default function Home() {
 
         {phase === "result" && result && (
           <div
-            className={`flex flex-1 flex-col items-center justify-center gap-8 transition-opacity duration-300 ${
+            className={`flex flex-1 flex-col items-center justify-center gap-8 transition-opacity duration-300 w-full max-w-md ${
               isAnimating ? "opacity-0" : "opacity-100"
             }`}
           >
@@ -291,26 +333,82 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Nearby Search */}
+            {/* Nearby Shops Section */}
             <div
-              className="animate-fade-up w-full max-w-xs"
+              className="animate-fade-up w-full flex flex-col gap-2.5"
               style={{ animationDelay: "0.3s" }}
             >
+              <p className="text-xs font-bold text-orange-400 ml-1">
+                📍 近くのお店
+              </p>
+
+              {/* Hot Pepper Results */}
+              {shopsLoading && (
+                <div className="flex items-center justify-center gap-2 rounded-2xl bg-white border border-orange-200/60 px-5 py-5">
+                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-orange-300 border-t-transparent" />
+                  <span className="text-sm text-orange-400">お店を探し中...</span>
+                </div>
+              )}
+
+              {!shopsLoading && shops.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  {shops.map((shop, i) => (
+                    <a
+                      key={i}
+                      href={shop.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-2xl bg-white border border-orange-200/60 px-4 py-3 shadow-sm transition-all active:scale-[0.98] hover:shadow-md"
+                    >
+                      {shop.photo ? (
+                        <img
+                          src={shop.photo}
+                          alt={shop.name}
+                          className="h-12 w-12 shrink-0 rounded-xl object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-xl">
+                          🍽️
+                        </span>
+                      )}
+                      <div className="flex flex-col items-start min-w-0">
+                        <span className="text-sm font-bold text-orange-900 truncate w-full">
+                          {shop.name}
+                        </span>
+                        {shop.genre && (
+                          <span className="text-[10px] font-bold text-orange-400">
+                            {shop.genre}
+                          </span>
+                        )}
+                        <span className="text-[10px] text-orange-300 truncate w-full">
+                          {shop.access}
+                        </span>
+                      </div>
+                      <span className="ml-auto shrink-0 text-orange-300">›</span>
+                    </a>
+                  ))}
+                  <p className="text-right text-[10px] text-orange-300">
+                    Powered by ホットペッパーグルメ
+                  </p>
+                </div>
+              )}
+
+              {/* Google Maps Fallback / Always Show */}
               <a
                 href={`https://www.google.com/maps/search/${encodeURIComponent(result.name + " レストラン")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-2xl bg-white border border-orange-200/60 px-5 py-4 shadow-sm transition-all active:scale-[0.98] hover:shadow-md"
+                className="flex items-center gap-3 rounded-2xl bg-white border border-orange-200/60 px-4 py-3 shadow-sm transition-all active:scale-[0.98] hover:shadow-md"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg">
-                  📍
+                  🗺️
                 </span>
                 <div className="flex flex-col items-start">
                   <span className="text-sm font-bold text-orange-900">
-                    近くのお店を探す
+                    Google Mapsで探す
                   </span>
-                  <span className="text-xs text-orange-400">
-                    Google Mapsで「{result.name}」を検索
+                  <span className="text-[10px] text-orange-400">
+                    「{result.name}」で地図検索
                   </span>
                 </div>
                 <span className="ml-auto text-orange-300">›</span>
